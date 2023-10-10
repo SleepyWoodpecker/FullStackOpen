@@ -1,0 +1,551 @@
+Chapter 0
+
+- For HTTP requests, there is also a readyState property, which returns the state that the XMLHTTPRequest client is in.
+A ready state of 4 would mean that the request is completed.
+
+- The topmost node of the DOM tree is known as the document object. This is also what is requested for when the GET request for the webpage is initially fired off
+
+- When a request is sent with a status code of 302, it signifies a redirect, in which the user is sent to another page. This causes all of the HTML, CSS and JS files to be re-rendered again on the new page.
+
+- data input into forms is usually sent as the body of a POST request, so Express server can usually find the body of the request using req.body
+
+- Single page apps (SPAs) are apps that comprise of only one HTML page fetched by the browser, that uses JS to manipulate the contents of the page. 
+
+- When a form submits, rather than re-render the page, you can (1) push the new entry into a list (2) send the new data to a server so that the new data is reflected on subsequent re-renders of the page.
+The associated HTML form will also not need any action or method attributes. All it has to do is send a JSON object to the server for processing
+
+- Using the above example, the content headers must be defined as application / json so that the browser will know how to handle the JSON data
+
+- Status code 201 means created. 
+
+- CSS elements also have an attribtue selector, which selects certain elements based on the attributes available, like img[src], which selects the img elements with an src element
+
+- Order of elements in the box layout is PBM (Padding, border, margin)
+
+Part 1
+- Prop elements can be given default values like how default values are declared in Python. But if the prop is declared with values null or 0, it will still overwrite the values
+
+- Props reflect a component's data at any point of time, rather than only at the beginning
+When a component has to change it props, it will have to request a new props object from its parents. This is because props theselves are immutable
+
+- If given an array to render as JSX, like:
+ const people = ['tom', 'mia'];
+ function App () {
+  return <div>{People}</div>
+ }
+It will render the people's names without a space
+
+- var variables are hoisted to the top of the global / function scope, with undefined, until it is reassigned a value later on. They are thus accessible even before they are defined.
+On the other hand, let variables are hoisted, but not given a default initialization. As such, they are not given a value before they are defined.  
+
+- In react, when adding a new element to the list, the use of .concat() is preferable to .push(). Doing so helps to prevent the input data from being mutated, since .concat() produces a new copy of the list. This is why .map() is highly favoured as well.
+
+- Objects attributes with special properties that do not fit in the dot (strings with spaces, variables that have to be evluated), should be referenced with square brackets
+
+- In JS, the this keyword is defined based on how the method is called. When a method is called through use of a reference, this will refer to the global object
+
+- Changes to local state variables do the following: (1) Retain data between renders (2) Trigger react to re-render the component
+
+- Each piece of state is local and completely private to a component inside the screen. Rendering the same component twice will create 2 different set of states, which are independent of one another
+
+- Updates in React happen asynchronously, at some point before the components are re-rendered again. This would cause some new updates to be missed when the component rerenders. The solution to this is to define an intermediate variable which you put into JSX to provide real-time updates.
+const App = () => {
+  // ...
+  const handleLeftClick = () => {
+    setAll(allClicks.concat('L'))
+    const updatedLeft = left + 1
+    setLeft(updatedLeft)
+    setTotal(updatedLeft + right) 
+  }
+  // ...
+}
+
+In the above code, the temporary variable updatedLeft is used to immediately update all the states, rather than wait for the state to update once, with left
+
+- Useful debugging tip: when you wish to print objects to the console, instead of using "ABC" + {Object}, use "ABC", {Object}
+
+- onClick={console.log('clicked the button')} <-- when code like that is written, the value of the event handler is defined to be the return value of the function call, which is undefined. As such, the event handler does not work as expected
+
+- an additional way for react components to take in functions is a function which returns a function. can just check the FSO website for more details. Below is an example of such a function
+
+const hello = (who) => () => {
+  console.log('hello', who)
+}
+
+Chapter 2
+
+- when it comes to form control, placing the form within its own component will help improve web app performance, since only the form itself, instead of the entire webpage, has to re-render with every keystroke
+
+- when setting a timer to re-render a state variable constantly, use setState(c => c + 1)
+
+- when writing to db.json, no need to supply an id as the server will automatically help you to create one is none is specified 
+
+Chpater 3
+
+- when installing dependencies for development, you can add in the npm i --save-dev to indicate that that is the case
+
+- to further simplify development with nodemon, add in, under "scripts", a "dev": "nodemon index.js" Like that, when you type in npm run dev, the server will start to fire
+
+- to get the parameters of a web request, label that portion of the URL with :(variable name). E.g. :id. Then, extract the value using id = request.params.(variable name), as the value will be stored inside the request object. 
+
+NOTE: This value will be stored as a string!
+
+- one method to search for a value is to use the JS .find() function. notes.find(note => note.id === id)
+
+- to decode JSON data, make use of express' JSON parser, by using app.use(express.json())
+
+- according to HTTP requirements, GET and HEAD methods should only be responsible for retrieving data, without creating any side effects on the server. HEAD requests on the other hand, are supposed to work jsut like GET requests, but only return the headers. Since these SAFE methods do not generate side effects, their result should be the same regardless of how many times the call is made.
+
+- middleware functions are functions that can be used to handle both request and response objects
+
+const requestLogger = (request, response, next) => {
+  console.log('Method:', request.method)
+  console.log('Path:  ', request.path)
+  console.log('Body:  ', request.body)
+  console.log('---')
+  next()
+}
+
+app.use(requestLogger)
+
+calling next after completing the function helps pass on data onto the next middleware function or the route handler. If you want your middleware functions to be called before you pass the data on to routes, should define the middleware functions first, then the routes
+
+- to add HTML files to the express server, use the static middleware. Use the line of code: app.use(express.static('build')). Whenever express receives a GET request, it will check the BUILD directory for a file that corresponds to the request's address
+  -> Now HTTP GET requests to the address www.serversaddress.com/index.html or www.serversaddress.com will show the React frontend. GET requests to the address www.serversaddress.com/api/notes will be handled by the backend's code.
+
+- in mongoDB, a document is the same as an object that you would store in the database
+
+- connection string to DB: mongodb+srv://swapistore73:Quwd7TPEOrHs28sU@cluster0.adgiw6h.mongodb.net/?retryWrites=true&w=majority
+
+- to create custom return values from mongoDB, you can modiy mongoDB's .json() function:
+
+noteSchema.set("toJSON", {
+	transform: (document (document which is being converted), returnedObject (document object which has been converted)) => {
+		// ._id is an object, so we should convert it to a String so that the value can be properly stored
+		returneObject.id = returnedObject._id.toString();
+		delete returnedObject._id;
+		delete returnedObject._v;
+	}
+})
+
+like that, no changes will be need to be made when processing the data:
+app.get('/api/notes', (request, response) => {
+  Note.find({}).then(notes => {
+    response.json(notes)
+  })
+})
+
+- additionally, the models used in NodeJS are stored inside a separate folder
+
+- when adding new functionality to the backend, it is always a good idea to utilize postman to test that it works fine. Additionally, add one functionality at a time
+			
+- to handle errors in express, one of the most basic ways would be to send an error code of 404 and then use .end()
+  -> specific to MONGOdb, but if your id is in the right format, but without an entry, then you will get a null obj
+  -> if your id is in the wrong format, then you will get an error
+
+- sometimes error handling is better left to middleware, like Sentry, rather than defining it on your own
+
+to enable middleware to handle errors, add a third, next argument to the route function:
+(req, res, next) => {
+  //...
+  .catch(err => next(err))
+
+to define your own error handling middleware, the function must accept 4 parameters:
+const errorHandler = (error, req, res, next) => {
+  console.error(error.message)
+  if (error.name === "CastError") {
+    return response.status(400).send('malformatted id')
+  }
+  next(error)
+}
+
+app.use(errorHandler) //note that error handling middleware has to be the last loaded middleware
+
+- to best perform update operations, it is best to use the findByIdAndupdate() function. By default, the function returns the document without updating it, but specifying the third argument with options object {new: true} returns the updated obj 
+
+- if you would like your data to follow a fixed format, you can include it in the schema of your DB: 
+const noteSchema = new mongoose.Schema({
+  content: {
+    type: String,
+    minLength: 5,
+    required: true
+  },
+  important: Boolean
+})
+To similarly implement data validation when updating the database, use the following code:
+Note.findByIdAndUpdate(
+    request.params.id, 
+    { content, important },
+    { new: true, runValidators: true, context: 'query' }
+  ) 
+
+- The error encountered when the validation fails will be ValidationError
+
+- cp -r build ../backend
+
+Part 4
+
+- Node recommends that users follow a fixed file structure, which can be found at the start of Part 4. 
+  ->Controllers refer to a module which handles all the routes that users can be directed to
+    --> unlike before, the route handlers are now defined with the Router object, which is a piece of middelware that handles related routes based on a base url
+
+  -> In the app.js file, the router is then defined with the base URL as such:
+	const notesRouter = require('./controllers/notes')
+	app.use('/api/notes', notesRouter)
+
+  -> Another file which is important is the Utils folder, which helps to store functions like info, which is a console.log as well as error, which is a console.error
+    --> It should be defined as such:
+	const info = (...params) => console.log(params)
+
+  -> handling of environment variables is assigned to the utils/config.js folder, in which environment variables are defined
+
+- following more best practices, just like in React, the index.js file is just used to set up the port, while all the routes are handled in the app.js file
+
+- Software testing, an important part which has been neglected so far LOL. This course uses the testing library known as JEST, which is good for testing backends and REACT applications. The specifics of setup for this library can be found in the FSO website. 
+  -> all files that wish to make use of jest have to be named with the .test.js at the end
+  -> to test just a subet of tests in JEST, use npm test -- -t <string desc of test>
+
+- based on the goal you are trying to achieve, there are differend modes during development:
+ 1: development, 2: production, 3: testing. It is common practice to define different commands for testing and production. 
+  -> in light of this, while testing your code, you should also run it in test mode. Adding the --runInBand flag prevents the tests from being run in parallel. The best way to test a database in the backend is to let it be tested on a local database, such that it does not interfere with the database that has already been setup. this is esp important when you are working in teams of people
+  -> nonetheless, in FSO, since you are working alone, you can just create a separate db for tests
+
+- testing your database can be done with the supertest package, which is saved as a development dependency. The tests will once again, be written in the tests folder
+  -> when defining the values to test for, it is best to use regular expressions instead of strings, since regex returns true as long as the string contains the regex you are looking for
+  -> during testing, it is also best that your logger does not log to the console. This can be achieved with the following code:
+const info = (...params) => {
+
+  if (process.env.NODE_ENV !== 'test') { 
+    console.log(...params)
+  }
+}
+
+const error = (...params) => {
+
+  if (process.env.NODE_ENV !== 'test') { 
+    console.error(...params)
+  }
+}
+
+module.exports = {
+  info, error
+} 
+  ->just like in react, you can use the beforeEach() function to ensure that the same changes are made to your DB everytime before you perform a test
+  -> while using async await, you can handle errors using the try, catch functions. In catch, the error is usually passed on to middleware functions using the next() function
+
+- to eliminate the need to write try, catch for every async function, a package known as express-async-errors can be installed. It automatically passes on error handling to middleware, should there be any error that occurs, without you having to write any code. All you have to do is require it at the start of your code
+
+- for...of loops support order of execution for asynchronous loops, while .forEach() loops just continue execution without waiting for the promise to complete. One way to get around this with forEach() is to use Promise.all(). But this may not be the best solution if the order of execution of your promises matter.
+
+- when comparing objects inside of arrarys in tests, the most thorough check that you can make is using toContainEqual. When using supertest to test api calls, do note that the api response is stored inside response.body
+
+
+Part 5
+
+- to set headers with an axios request, make use of the following code:
+	axios.post(url, body, {headers:{Authorization: <<token here>>}}})
+  In this example, it is the third parameter passed into axios.post
+
+- to make the token value somewhat of a private value, export, from the same folder used to make new users, the function setToken:
+let token = null
+
+const setToken = newToken => {
+  token = `Bearer ${newToken}`
+}
+
+- to ensure that the key value persists between requests, make use of localStorage, which similar to mongoDB, is a key-value database in the browser.
+
+> to store a new item, make use of window.localStorage.setItem('name', 'Sheesh')
+> to get the value of an item associated with a key, make use of window.localStorage.getItem('name')
+>to remove an item, make use of window.localStorage.removeItem('name')
+>to clear every item from the storage, make use of the command: window.localStorage.clear()
+
+  -> these values are persisted even when the browser is refreshed, and the storage is origin-specific (same scheme [http] and hostname [sheesh.com]), so each web application has its own storage
+  -> values you save into the storage has to be in the format of DOMstrings, so before saving, you must make use of JSON.stringify(token). 
+  -> likewise, when reading the values from the storage, make use of JSON.parse to convert the read value back into a JS object
+
+- for security reasons though, it might not be the best idea to save tokens in local storage. The best way would be to save them as http cookies. They are vulnerable to something known as XSS, cross site scripting
+
+- another way to implement conditional rendering of components is to make use of the display: <> property. Display: "" would make it visible, while display: none would make it invisible
+
+to fully simplify their application into code:
+
+const hideWhenVisible = { display: visible ? 'none' : '' }
+  const showWhenVisible = { display: visible ? '' : 'none' }
+
+  const toggleVisibility = () => {
+    setVisible(!visible)
+  }
+
+  return (
+    <div>
+      <div style={hideWhenVisible}>
+
+This last <div> is meant to be shown when the main component is visible
+
+- another hook that was introduced is the useRef hook, which create a ref that points to a component, which you wish to extract a function from.
+
+const noteFormRef = useRef()
+const addNote = (noteObject) => {
+    noteFormRef.current.toggleVisibility()
+    noteService
+      .create(noteObject)
+      .then(returnedNote => {     
+        setNotes(notes.concat(returnedNote))
+      })
+  const noteForm = () => (
+    <Togglable buttonLabel='new note' ref={noteFormRef}>
+
+
+-> the Toggalable component is then wrapped in another function
+import { useState, forwardRef, useImperativeHandle } from 'react'
+
+const Togglable = forwardRef((props, refs) => {
+  const [visible, setVisible] = useState(false)
+
+  const hideWhenVisible = { display: visible ? 'none' : '' }
+  const showWhenVisible = { display: visible ? '' : 'none' }
+
+  const toggleVisibility = () => {
+    setVisible(!visible)
+  }
+
+  useImperativeHandle(refs, () => {
+    return {
+      toggleVisibility
+    }
+  })
+^this can also be used to change state outside a component, but it is not the most elegant form, esp for react function based components
+
+- to ensure that props are required to be filled in, you can add in the package prop-types
+
+Togglable.propTypes = {
+  buttonLabel: PropTypes.string.isRequired
+} -> this states that the proptype of buttonLabel must be a string, and that it is required. An error message would be shown in the console if any of its conditions are not fulfilled
+
+- to test react apps, we will make use of:
+(1) jest (configured by default to applications with cra)
+(2) react testing library npm install --save-dev @testing-library/react @testing-library/jest-dom
+(3) jest-dom, which has some nice helper methods
+
+- to access components in the your application, they have to be configured with classNames that can help to identify them
+  ->Some simple tests that you can make are as follows, using the class notes: 
+import '@testing-library/jest-dom/extend-expect'
+import { render, screen } from '@testing-library/react'
+import Note from './Note'
+  //helps to create the note, without rendering it to the DOM
+  render(<Note note={} />
+ //performs tests on the note
+ element = screen.getByText("component testing is done with react-testing-library")
+ expect(element).toBeDefined() [in reality, this expect statement is not required, because the getBytText test fails if there is no such component found
+
+- Create-react-app configures tests to be run in watch mode by default, which means that the npm test command will not exit once the tests have finished, and will instead wait for changes to be made to the code. Once new changes to the code are saved, the tests are executed automatically after which Jest goes back to waiting for new changes to be made.
+ -> to run tests "normally", you can do so with the command: CI=true npm test
+
+- while creating tests, you will usually run into problems. Debugging the application is simple, by using screen.debug(), which will print out the entire HTML element. If you would like more specificity when printing out the element, you can pass the rendered element into screen.debug(element) -> this will cause the element to be the only printed result
+
+- another dimension of testing react components is to trigger user events, like the clicking of a button. this can be triggered with the user-event library, installed with the command: npm install --save-dev @testing-library/user-event
+
+import userEvent from '@testing-library/user-event'
+...
+// event handler is a mock function defined with jest
+ const mockHandler = jest.fn()
+
+  render(
+    <Note note={note} toggleImportance={mockHandler} />
+  )
+
+// starts a session to interact with the rendered component
+  const user = userEvent.setup()
+
+//get the button and click it
+  const button = screen.getByText('make not important')
+  // note how the user event functions are asynchronous, so await has to be put before them
+  await user.click(button)
+
+// verifies that the function has only been called once
+  expect(mockHandler.mock.calls).toHaveLength(1)
+
+ -> to select one out of the many text boxes that are available, you should make use of const input = screen.getByPlaceholderText('write note content here') 
+
+ -> nonetheless, the most flexible way to select elements, without requiring them to be changed visually, is to assign them an id and use container.querySelector("#<<id>>"). 
+
+ -> containers are set up as follows: const { container } = render(<NoteForm createNote={createNote} />)
+    --> elements inside the container can be selected using container.querySelector(".<className>")
+
+-> the last type of testing is known as end to end testing, E2E testing. It tests the functionality of the system as a whole
+  -> the library that we will be exploring is the Cypress library, which runs its tests in the browser, instead of the node runtime. 
+  -> install it with npm install --save-dev cypress
+  -> when testing with cypress, it is essential that the system is running beforehand. Unlike JEST which starts up the system for you
+  -> cypress files are titled <file to be tested>.cy.js, and below is an example of the code used for testing
+
+describe('Note app', function() {
+  it('front page can be opened', function() {
+    cy.visit('http://localhost:3000')
+    cy.contains('Notes')
+    cy.contains('Note app, Department of Computer Science, University of Helsinki 2023')
+  })
+})
+
+  -> when describing functions inside cypress, it is recommended that function () {} constructors, instead of arrow functions are used
+  -> select elements using cy.get(<<CSS selector>>).(event [could be type or click])
+-> as far as the browser is concerned, each test is run from a 0 state. But to ensure that each moving part in the code is working, first test the login, before using the login inside beforeEach()
+
+-> it would be best to empty and reset the database, by emptying it before each iteration of tests. Beacause cypress has no access to the database, a workaround is making an endpoint for the clearing of the database, only accessible in the testing node-env
+
+-> to speed up and implement abstraction in code, one can make use of Cypress.Commands.add(<custom function>), and access it later using cy.<<custom function>>. The file should be defined in cypress/support/commands.js
+
+-> The configuration file, cypress.config.js can also be modified to contain the folowing:
+const { defineConfig } = require("cypress")
+
+module.exports = defineConfig({
+  e2e: {
+    setupNodeEvents(on, config) {
+    },
+    baseUrl: 'http://localhost:3000'
+  },
+  env: {
+    BACKEND: "http://localhost:3001/api"
+  }
+})
+
+Like that, visiting http://localhost:3000 is as simple as cy.visit("").
+The backend url can also be simplified to be accessed using Cypress.env("BACKEND")
+
+ -> to simplify access to different elements on the screen, a mix of storing variables and DOM traversal are used:
+it('one of those can be made important', function () {
+  cy.contains('second note').parent().find('button').as('theButton')
+  cy.get('@theButton').click()
+  cy.get('@theButton').should('contain', 'make not important')
+})
+
+ -> to skip some tests, define it with xit instead of it
+
+Chapter 6
+
+This chapter focuses on state management with redux store.
+
+- start by installing redux using npm i redux
+  -> import {createStore} from "redux"
+const counterReducer =  (state = 0, action) => {
+  switch (action.type) {... (using a switch statement is faster than an if else statement)
+}
+const store = createStore(counterReducer)
+  -> to access the store, make use of .getState()
+  -> another method that is used is .subscribe(), which would be called everytime the state changes
+  -> to access the methods created, use .dspatch({type: <<action string})
+
+- reducer states have to be immutable. if there is a change in the state, they have to be replaced with a new object, rather than directly modified
+
+- because redux does not directly make use of useState, changes do not automatically cause re-renders. to fix that, make use of the following:
+const renderApp = () => {
+  root.render(<App />)
+}
+
+renderApp()
+store.subscribe(renderApp)
+
+note that renderApp() is called once to render the app the first time. store.subscribe(renderApp) helps re-render the app everytime the state inside the app is updated
+
+- somewhat similar to the body of a post request, a payload can be added to the dispatch function to increase the dynamism of a dispatch function
+store.dispatch({
+  type: 'NEW_NOTE',
+  payload: {
+    content: 'state changes are made with actions',
+    important: false,
+    id: 2
+  }
+})
+
+- dispatch action handlers should also be pure functions, which must not cause any side effects to other variables. As such, instead of using state.push(),            state.concat(action.payload) should be used instead.
+
+- also take note that the new state must be returned from the dispatch function
+
+- testing for immutability of state can be done with the deep-freeze library
+  -> after all the describe() and test() code has been defined, the deepFreeze(<<state>>), ensures that the reducer does not change the state of the store. Using array.push will cause the test to fail.
+
+- when adding controlled forms using redux, you can directly access the content in the form using event.target.<<field name>>.value 
+  -> this is accessed via <input name="<<field name>>" />
+
+- to further simplify the code that is being written, you can also make use of what are known as action creators: 
+  const actionCreator = () => return ({type: ...});
+  Making use of them later is as simple as store.dispatch(actionCreator())
+
+- to enable other components to make use of the redux store in a multi-file app, make use make use of the react-redux library
+  -> npm install react-redux
+
+- in the App.js file, we now import the react-redux file:
+  import { Provider } from 'react-redux'
+  import App from './App'
+  import noteReducer from './reducers/noteReducer'
+
+  const store = createStore(noteReducer)
+
+  ReactDOM.createRoot(document.getElementById('root')).render(
+  <Provider store={store}>
+    <App />
+  </Provider>
+  )
+
+- useDispatch() will usually be stored inside a variable, and dispatch functions can now be called using dispatch(<<action type>>);
+
+- useSelector() receives a function as a parameter. This function helps you to select which type of state will be rendered / processed from the redux store. 
+  -> to get all the state, useSelector(state => state)
+  -> to get some of the state useSelector(state => state.filter(state => return state.important))
+
+- when it comes to making more complex state, you can also implement the filter functionality by adding in {..., filter: "<<filter string>>"}. This filter property will determine the type of notes shown to the user
+  -> to fully implement the filtering functionality, we can also make use of a separate filter reducer 
+
+- the actual reducer of the application can then be defined by combining the 2 reducrs inside, usingg the combineReducers function
+
+import noteReducer from './reducers/noteReducer'
+import filterReducer from './reducers/filterReducer'
+
+const reducer = combineReducers({
+  notes: noteReducer,
+  filter: filterReducer
+})
+
+const store = createStore(reducer)
+
+- when actions are dispatched, it is normal that the dispatched action is duplicated across both reducers. This allows for a scenario where multuiple reducers change their state based on one action
+
+- instead of using the deprecated createStore, we should now install RTK, using the below CLI argument: npm install @reduxjs/toolkit
+  -> now the store can be implemented using configureStore (this removes the need for a combineReducers function)
+
+- there is now also the createSlice function
+  -> name parameter defines the prefix which is used in the action's type values. Eg, with a name "note" and an action called createNote, action later will have the type notes/createNote [good to have unique names to prevent collisions]
+  -> initialState parameter defines the original state of the object
+  -> reducers parameter takes the reducer itself as an object, of which with functions that handle the state changes [action.payload is whatever is input inside the action creator]
+
+- with RTK, you can now mutate state directly, as RTK uses the immer library to update the state with a copy
+
+- additionally, createSlice creates a full on object, whereby the reducer is noteSlice.reducer is the default export and the actions are the const exports
+
+- another option for managing the data being sent to the server is to make use of react query, npm install react-query
+  -> this gives you kind of a pre-desgined object that enables you to make HTTP requests and monitor their status with more ease, having states like isLoading, isSuccess, isError. The response of a successful http request is contained in the data property
+  -> in the useQuery hook, the first argument is a string which will be stored as a key value, to be used in caching of the result of the query
+  -> this prevents you from having to make use of the useState and useEffect hooks, with all the state being managed in the ReactQuery library
+  -> when making create/update/delete queries, make use of the useMutation instead of the useQuery hook. To access the note that has been created, you should then make use of the following: 
+const newNoteMutation = useMutation(createNote)
+newNoteMutation.mutate({ content, important: true })
+  -> after a mutation has been performed, to ensure that the data mutation is reflected on your app, you must make use of a "onSuccess" callback function
+  -> const newNoteMutation = useMutation(createNote, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('notes')
+    },
+  }) -> doing this will cause the "notes" key to be invalidated, and the data re-rendered, by making another whole get request
+
+- to precent the remaking of another request, we can make directly mutate the state in the notes:
+	const newNoteMutation = useMutation(createNote, {
+    onSuccess: (newNote) => {
+      const notes = queryClient.getQueryData('notes')
+      queryClient.setQueryData('notes', notes.concat(newNote))
+    }
+  })
+
+- you will also notice that a new HTTP get request is made whenever the window focus of the application changes. To prevent this from happening, in the useQuery function, indicate an option which states that refreshOnWindowFocus: false. 
+  -> how often to re-render an application then? the rule of thumb is to re-render minimally when the state of the query changes
+
+- another alternative method to handle state is to make use of a useReducer hook, whose sytax is as such: const [counter, counterDispatch] = useReducer(counterReducer, 0)
+
