@@ -1,6 +1,6 @@
 import { useMutation } from "@apollo/client";
 import { useState } from "react";
-import { ALL_BOOKS, NEW_BOOK } from "../queries";
+import { GET_BOOKS, NEW_BOOK } from "../queries";
 
 const NewBook = () => {
   const [title, setTitle] = useState("");
@@ -10,7 +10,17 @@ const NewBook = () => {
   const [genres, setGenres] = useState([]);
 
   const [addBook] = useMutation(NEW_BOOK, {
-    refetchQueries: [{ query: ALL_BOOKS }],
+    update(cache, response) {
+      cache.updateQuery(
+        // this has to have the flag variables : {genre: "", author: ""} as this is the cached response :/
+        { query: GET_BOOKS, variables: { genre: "", author: "" } },
+        ({ allBooks }) => {
+          return {
+            allBooks: allBooks.concat(response.data.addBook),
+          };
+        }
+      );
+    },
   });
 
   const submit = async (event) => {

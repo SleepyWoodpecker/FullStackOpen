@@ -70,7 +70,7 @@ const typeDefs = `
     name: String!,
     id: ID!,
     born: Int,
-    bookCount: Int!
+    bookCount: Int
   }
 
   type User {
@@ -92,7 +92,9 @@ const resolvers = {
     authorCount: async () => Author.collection.countDocuments(),
     allBooks: async (root, args) => {
       const { author, genre } = args;
-      if (!author && !genre) return Book.find({}).populate("author");
+      if (!author && !genre) {
+        return Book.find({}).populate("author");
+      }
 
       if (author && !genre) {
         const desiredAuthor = await Author.findOne({ name: author });
@@ -127,7 +129,11 @@ const resolvers = {
         }
       });
       allAuthors.forEach((author) => {
-        author.bookCount = bookCount[author._id];
+        if (bookCount[author._id]) {
+          author.bookCount = bookCount[author._id];
+        } else {
+          author.bookCount = 0;
+        }
       });
       return allAuthors;
     },
