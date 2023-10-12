@@ -1,0 +1,10 @@
+{
+  "devDependencies": {
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  },
+  "scripts": {
+    "ts-node": "ts-node",
+    "calculator": "ts-node calculator.ts"
+  }
+}
