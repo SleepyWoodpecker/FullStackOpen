@@ -1,6 +1,6 @@
-import { useMutation } from "@apollo/client";
+import { useApolloClient, useMutation, useSubscription } from "@apollo/client";
 import { useState } from "react";
-import { GET_BOOKS, NEW_BOOK } from "../queries";
+import { GET_BOOKS, NEW_BOOK, BOOK_ADDED } from "../queries";
 
 const NewBook = () => {
   const [title, setTitle] = useState("");
@@ -8,20 +8,72 @@ const NewBook = () => {
   const [published, setPublished] = useState("");
   const [genre, setGenre] = useState("");
   const [genres, setGenres] = useState([]);
+  const client = useApolloClient();
+
+  const updateCache = (cache, query, toAdd) => {
+    cache.updateQuery(query, ({ allBooks }) => {
+      const fillerSet = new Set();
+      console.log([...allBooks, toAdd], allBooks.concat(toAdd));
+      const filteredBooks = [...allBooks, toAdd].filter((book) => {
+        return fillerSet.has(book.id) ? false : fillerSet.add(book.id);
+      });
+      console.log(filteredBooks);
+      return {
+        allBooks: filteredBooks,
+      };
+    });
+  };
 
   const [addBook] = useMutation(NEW_BOOK, {
     update(cache, response) {
-      cache.updateQuery(
-        // this has to have the flag variables : {genre: "", author: ""} as this is the cached response :/
+      updateCache(
+        cache,
         { query: GET_BOOKS, variables: { genre: "", author: "" } },
-        ({ allBooks }) => {
-          return {
-            allBooks: allBooks.concat(response.data.addBook),
-          };
-        }
+        response.data.addBook
       );
     },
   });
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data }) => {
+      console.log(data);
+      window.alert("New Book Added");
+      updateCache(
+        client.cache,
+        { query: GET_BOOKS, variables: { genre: "", author: "" } },
+        data.data.bookAdded
+      );
+    },
+  });
+
+  // const [addBook] = useMutation(NEW_BOOK, {
+  //   update(cache, response) {
+  //     cache.updateQuery(
+  //       // when using updateQuery, this has to have the flag variables : {genre: "", author: ""} as this is the cached response :/
+  //       { query: GET_BOOKS, variables: { genre: "", author: "" } },
+  //       ({ allBooks }) => {
+  //         return {
+  //           allBooks: [...new Set(allBooks.concat(response.data.addBook))],
+  //         };
+  //       }
+  //     );
+  //   },
+  // });
+
+  // useSubscription(BOOK_ADDED, {
+  //   onData: ({ data }) => {
+  //     console.log(data);
+  //     window.alert("New Book Added");
+  //     client.cache.updateQuery(
+  //       { query: GET_BOOKS, variables: { genre: "", author: "" } },
+  //       ({ allBooks }) => {
+  //         return {
+  //           allBooks: [...new Set(allBooks.concat(data.data.bookAdded))],
+  //         };
+  //       }
+  //     );
+  //   },
+  // });
 
   const submit = async (event) => {
     event.preventDefault();
