@@ -1,11 +1,11 @@
 import { isNumber } from "./utils";
 
-interface arguments {
+export interface calculatorArguments {
   height: number;
   weight: number;
 }
 
-function parseArguments(args: string[]): arguments {
+function parseArguments(args: string[]): calculatorArguments {
   if (args.length < 4 || args.length > 4)
     throw new Error("need exactly 4 arguments");
 
@@ -19,7 +19,7 @@ function parseArguments(args: string[]): arguments {
   }
 }
 
-function calculateBmi(height: number, weight: number): string {
+export const calculateBmi = (height: number, weight: number): string => {
   const bmi: number = weight / (height / 100) ** 2;
   if (bmi < 18.5) {
     return "Underweight (Unhealthy)";
@@ -32,13 +32,15 @@ function calculateBmi(height: number, weight: number): string {
   } else {
     return "Overweight III (Severely obese)";
   }
-}
+};
 
+// apparently this whole thing is triggered by importing the file???
 try {
+  // console.log("Why is this running?");
   const { height, weight } = parseArguments(process.argv);
   console.log(calculateBmi(height, weight));
 } catch (err: unknown) {
-  let errorMessage: string = "Error, ";
+  let errorMessage: string = "There was an error, ";
   if (err instanceof Error) {
     errorMessage += err.message;
   }

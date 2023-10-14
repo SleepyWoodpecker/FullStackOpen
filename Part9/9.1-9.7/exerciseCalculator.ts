@@ -10,7 +10,7 @@ function checkArguments(args: string[]): argumentValues {
 
   function evaluateDailyHours(hours: string[]): boolean {
     for (const hour of hours) {
-      if (isNaN(Number(hour))) {
+      if (!isNumber(hour)) {
         return false;
       }
     }
@@ -25,9 +25,11 @@ function checkArguments(args: string[]): argumentValues {
       dailyExercise: exerciseNumbers,
     };
   }
+
+  throw new Error(`All arguments should be numbers!`);
 }
 
-interface exerciseAnalysis {
+export interface exerciseAnalysis {
   days: number;
   trainingDays: number;
   targetTime: number;
@@ -37,7 +39,7 @@ interface exerciseAnalysis {
   explanation: string;
 }
 
-function calculateExercise(
+export function calculateExercise(
   dailyExerciseHous: number[],
   targetTime: number
 ): exerciseAnalysis {
@@ -53,7 +55,7 @@ function calculateExercise(
   if (targetReached) {
     explanation = "well done, keep it up";
     rating = 3;
-  } else if (avgTime - targetTime <= 0.5) {
+  } else if (targetTime - avgTime <= 0.5) {
     explanation = "almost there";
     rating = 2;
   } else {
